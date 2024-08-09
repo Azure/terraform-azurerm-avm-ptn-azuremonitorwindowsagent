@@ -221,12 +221,7 @@ variable "tags" {
   description = "(Optional) Tags of the resource."
 }
 
-variable "siteId" {
-  description = "A unique identifier for the site."
-  type        = string
-}
-
-variable "serverNames" {
+variable "server_names" {
   description = "A list of servers with their names."
   type        = list(string)
 }
@@ -236,17 +231,17 @@ variable "arcSettingId" {
   type        = string
 }
 
-variable "workspaceName" {
+variable "workspace_name" {
   description = "The name of the Azure Log Analytics workspace."
   type        = string
 }
 
-variable "dataCollectionRuleName" {
+variable "data_collection_rule_name" {
   description = "The name of the Azure Log Analytics data collection rule."
   type        = string
 }
 
-variable "dataCollectionEndpointName" {
+variable "data_collection_endpoint_name" {
   description = "The name of the Azure Log Analytics data collection endpoint."
   type        = string
 }

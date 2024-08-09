@@ -8,49 +8,38 @@ If it is set to false, then no telemetry will be collected.
 DESCRIPTION
 }
 
-variable "siteId" {
-  description = "A unique identifier for the site."
-  type        = string
-}
-
 variable "resource_group_name" {
   description = "The resource group name for the Azure Stack HCI cluster."
   type        = string
 }
 
-variable "workspaceName" {
+variable "workspace_name" {
   description = "The name of the Azure Log Analytics workspace."
   type        = string
 }
 
-variable "dataCollectionRuleName" {
+variable "data_collection_rule_name" {
   description = "The name of the Azure Log Analytics data collection rule."
   type        = string
 }
 
-variable "dataCollectionEndpointName" {
+variable "data_collection_endpoint_name" {
   description = "The name of the Azure Log Analytics data collection endpoint."
   type        = string
 }
 
-variable "enableInsights" {
+variable "enable_insights" {
   description = "Whether to enable Azure Monitor Insights."
   type        = bool
   default     = false
 }
 
-variable "enableAlerts" {
-  description = "Whether to enable Azure Monitor Alerts."
-  type        = bool
-  default     = false
-}
-
-variable "clusterName" {
+variable "cluster_name" {
   type = string
   description = "The name of the HCI cluster. Must be the same as the name when preparing AD."
   validation {
-    condition     = length(var.clusterName) < 16 && length(var.clusterName) > 0
-    error_message = "value of clusterName should be less than 16 characters and greater than 0 characters"
+    condition     = length(var.cluster_name) < 16 && length(var.cluster_name) > 0
+    error_message = "value of cluster_name should be less than 16 characters and greater than 0 characters"
   }
 }
 

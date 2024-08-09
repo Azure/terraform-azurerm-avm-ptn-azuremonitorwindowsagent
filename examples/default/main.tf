@@ -13,10 +13,6 @@ terraform {
       source  = "azure/modtm"
       version = "~> 0.3"
     }
-    random = {
-      source  = "hashicorp/random"
-      version = "~> 3.5"
-    }
   }
 }
 
@@ -24,25 +20,11 @@ provider "azurerm" {
   features {}
 }
 
-
 ## Section to provide a random Azure region for the resource group
 # This allows us to randomize the region for the resource group.
 module "regions" {
   source  = "Azure/avm-utl-regions/azurerm"
   version = "~> 0.1"
-}
-
-# This allows us to randomize the region for the resource group.
-resource "random_integer" "region_index" {
-  max = length(module.regions.regions) - 1
-  min = 0
-}
-## End of section to provide a random Azure region for the resource group
-
-# This ensures we have unique CAF compliant names for our resources.
-module "naming" {
-  source  = "Azure/naming/azurerm"
-  version = "~> 0.3"
 }
 
 # This is required for resource modules
@@ -53,17 +35,17 @@ data "azurerm_resource_group" "rg" {
 data "azapi_resource" "cluster" {
   type      = "Microsoft.AzureStackHCI/clusters@2023-08-01-preview"
   parent_id = data.azurerm_resource_group.rg.id
-  name      = var.clusterName
+  name      = var.cluster_name
 }
 
-data "azapi_resource" "arcSettings" {
+data "azapi_resource" "arc_settings" {
   type      = "Microsoft.AzureStackHCI/clusters/ArcSettings@2023-08-01"
   parent_id = data.azapi_resource.cluster.id
   name      = "default"
 }
 
 locals {
-  serverNames = [for server in var.servers : server.name]
+  server_names = [for server in var.servers : server.name]
 }
 
 # This is the module call
@@ -76,12 +58,11 @@ module "test" {
   # ...
 
   location                   = data.azurerm_resource_group.rg.location
-  count                      = var.enableInsights ? 1 : 0
-  siteId                     = var.siteId
+  count                      = var.enable_insights ? 1 : 0
   resource_group_name        = var.resource_group_name
-  serverNames                = local.serverNames
-  arcSettingId               = data.azapi_resource.arcSettings.id
-  workspaceName              = var.workspaceName
-  dataCollectionRuleName     = var.dataCollectionRuleName
-  dataCollectionEndpointName = var.dataCollectionEndpointName
+  server_names                = local.server_names
+  arcSettingId               = data.azapi_resource.arc_settings.id
+  workspace_name              = var.workspace_name
+  data_collection_rule_name     = var.data_collection_rule_name
+  data_collection_endpoint_name = var.data_collection_endpoint_name
 }

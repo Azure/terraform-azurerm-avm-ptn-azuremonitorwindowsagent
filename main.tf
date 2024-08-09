@@ -28,23 +28,23 @@ data "azurerm_resource_group" "rg" {
 resource "azurerm_log_analytics_workspace" "workspace" {
   resource_group_name = data.azurerm_resource_group.rg.name
   location            = data.azurerm_resource_group.rg.location
-  name                = var.workspaceName
+  name                = var.workspace_name
 }
 
 resource "azurerm_monitor_data_collection_endpoint" "dce" {
   resource_group_name           = data.azurerm_resource_group.rg.name
   location                      = data.azurerm_resource_group.rg.location
-  name                          = var.dataCollectionEndpointName
+  name                          = var.data_collection_endpoint_name
   public_network_access_enabled = true
 }
 
 resource "azurerm_monitor_data_collection_rule" "dcr" {
   data_collection_endpoint_id = azurerm_monitor_data_collection_endpoint.dce.id
   location                    = data.azurerm_resource_group.rg.location
-  name                        = var.dataCollectionRuleName
+  name                        = var.data_collection_rule_name
   resource_group_name         = data.azurerm_resource_group.rg.name
   data_flow {
-    destinations       = [var.workspaceName]
+    destinations       = [var.workspace_name]
     streams            = ["Microsoft-Perf"]
     built_in_transform = null
     transform_kql      = null
@@ -81,7 +81,7 @@ resource "azurerm_monitor_data_collection_rule" "dcr" {
   }
   destinations {
     log_analytics {
-      name                  = var.workspaceName
+      name                  = var.workspace_name
       workspace_resource_id = azurerm_log_analytics_workspace.workspace.id
     }
     log_analytics {
@@ -109,7 +109,7 @@ resource "azapi_resource" "monitor_agent" {
 }
 
 resource "azurerm_monitor_data_collection_rule_association" "association" {
-  for_each                    = toset(var.serverNames)
+  for_each                    = toset(var.server_names)
   data_collection_endpoint_id = null
   data_collection_rule_id     = azurerm_monitor_data_collection_rule.dcr.id
   description                 = null
