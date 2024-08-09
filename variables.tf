@@ -4,18 +4,6 @@ variable "location" {
   nullable    = false
 }
 
-variable "name" {
-  type        = string
-  description = "The name of the this resource."
-
-  validation {
-    condition     = can(regex("TODO", var.name))
-    error_message = "The name must be TODO." # TODO remove the example below once complete:
-    #condition     = can(regex("^[a-z0-9]{5,50}$", var.name))
-    #error_message = "The name must be between 5 and 50 characters long and can only contain lowercase letters and numbers."
-  }
-}
-
 # This is required for most resource modules
 variable "resource_group_name" {
   type        = string
@@ -231,4 +219,34 @@ variable "tags" {
   type        = map(string)
   default     = null
   description = "(Optional) Tags of the resource."
+}
+
+variable "siteId" {
+  description = "A unique identifier for the site."
+  type        = string
+}
+
+variable "serverNames" {
+  description = "A list of servers with their names."
+  type        = list(string)
+}
+
+variable "arcSettingId" {
+  description = "The resource ID for the Azure Arc setting."
+  type        = string
+}
+
+variable "workspaceName" {
+  description = "The name of the Azure Log Analytics workspace."
+  type        = string
+}
+
+variable "dataCollectionRuleName" {
+  description = "The name of the Azure Log Analytics data collection rule."
+  type        = string
+}
+
+variable "dataCollectionEndpointName" {
+  description = "The name of the Azure Log Analytics data collection endpoint."
+  type        = string
 }

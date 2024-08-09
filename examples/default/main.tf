@@ -1,6 +1,10 @@
 terraform {
   required_version = "~> 1.5"
   required_providers {
+    azapi = {
+      source  = "azure/azapi"
+      version = "~> 1.13"
+    }
     azurerm = {
       source  = "hashicorp/azurerm"
       version = "~> 3.74"
@@ -42,9 +46,24 @@ module "naming" {
 }
 
 # This is required for resource modules
-resource "azurerm_resource_group" "this" {
-  location = module.regions.regions[random_integer.region_index.result].name
-  name     = module.naming.resource_group.name_unique
+data "azurerm_resource_group" "rg" {
+  name = var.resource_group_name
+}
+
+data "azapi_resource" "cluster" {
+  type      = "Microsoft.AzureStackHCI/clusters@2023-08-01-preview"
+  parent_id = data.azurerm_resource_group.rg.id
+  name      = var.clusterName
+}
+
+data "azapi_resource" "arcSettings" {
+  type      = "Microsoft.AzureStackHCI/clusters/ArcSettings@2023-08-01"
+  parent_id = data.azapi_resource.cluster.id
+  name      = "default"
+}
+
+locals {
+  serverNames = [for server in var.servers : server.name]
 }
 
 # This is the module call
@@ -55,9 +74,14 @@ module "test" {
   source = "../../"
   # source             = "Azure/avm-<res/ptn>-<name>/azurerm"
   # ...
-  location            = azurerm_resource_group.this.location
-  name                = "TODO" # TODO update with module.naming.<RESOURCE_TYPE>.name_unique
-  resource_group_name = azurerm_resource_group.this.name
 
-  enable_telemetry = var.enable_telemetry # see variables.tf
+  location                   = data.azurerm_resource_group.rg.location
+  count                      = var.enableInsights ? 1 : 0
+  siteId                     = var.siteId
+  resource_group_name        = var.resource_group_name
+  serverNames                = local.serverNames
+  arcSettingId               = data.azapi_resource.arcSettings.id
+  workspaceName              = var.workspaceName
+  dataCollectionRuleName     = var.dataCollectionRuleName
+  dataCollectionEndpointName = var.dataCollectionEndpointName
 }
