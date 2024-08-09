@@ -9,10 +9,6 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "~> 3.74"
     }
-    modtm = {
-      source  = "azure/modtm"
-      version = "~> 0.3"
-    }
   }
 }
 
@@ -56,12 +52,13 @@ module "test" {
   source = "../../"
   # source             = "Azure/avm-<res/ptn>-<name>/azurerm"
   # ...
+  enable_telemetry = var.enable_telemetry
 
   location                      = data.azurerm_resource_group.rg.location
   count                         = var.enable_insights ? 1 : 0
   resource_group_name           = var.resource_group_name
   server_names                  = local.server_names
-  arcSettingId                  = data.azapi_resource.arc_settings.id
+  arc_setting_id                = data.azapi_resource.arc_settings.id
   workspace_name                = var.workspace_name
   data_collection_rule_name     = var.data_collection_rule_name
   data_collection_endpoint_name = var.data_collection_endpoint_name

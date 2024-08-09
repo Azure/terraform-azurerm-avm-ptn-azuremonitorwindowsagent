@@ -26,23 +26,26 @@ data "azurerm_resource_group" "rg" {
 }
 
 resource "azurerm_log_analytics_workspace" "workspace" {
-  location            = data.azurerm_resource_group.rg.location
+  location            = var.location
   name                = var.workspace_name
   resource_group_name = data.azurerm_resource_group.rg.name
+  tags                = {}
 }
 
 resource "azurerm_monitor_data_collection_endpoint" "dce" {
-  location                      = data.azurerm_resource_group.rg.location
+  location                      = var.location
   name                          = var.data_collection_endpoint_name
   resource_group_name           = data.azurerm_resource_group.rg.name
   public_network_access_enabled = true
+  tags                          = {}
 }
 
 resource "azurerm_monitor_data_collection_rule" "dcr" {
-  location                    = data.azurerm_resource_group.rg.location
+  location                    = var.location
   name                        = var.data_collection_rule_name
   resource_group_name         = data.azurerm_resource_group.rg.name
   data_collection_endpoint_id = azurerm_monitor_data_collection_endpoint.dce.id
+  tags                        = {}
 
   data_flow {
     destinations       = [var.workspace_name]
@@ -106,7 +109,7 @@ resource "azapi_resource" "monitor_agent" {
     }
   }
   name      = "AzureMonitorWindowsAgent"
-  parent_id = var.arcSettingId
+  parent_id = var.arc_setting_id
 }
 
 resource "azurerm_monitor_data_collection_rule_association" "association" {
