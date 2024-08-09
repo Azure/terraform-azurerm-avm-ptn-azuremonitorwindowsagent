@@ -34,14 +34,14 @@ data "azurerm_resource_group" "rg" {
 
 data "azapi_resource" "cluster" {
   type      = "Microsoft.AzureStackHCI/clusters@2023-08-01-preview"
-  parent_id = data.azurerm_resource_group.rg.id
   name      = var.cluster_name
+  parent_id = data.azurerm_resource_group.rg.id
 }
 
 data "azapi_resource" "arc_settings" {
   type      = "Microsoft.AzureStackHCI/clusters/ArcSettings@2023-08-01"
-  parent_id = data.azapi_resource.cluster.id
   name      = "default"
+  parent_id = data.azapi_resource.cluster.id
 }
 
 locals {
@@ -57,12 +57,12 @@ module "test" {
   # source             = "Azure/avm-<res/ptn>-<name>/azurerm"
   # ...
 
-  location                   = data.azurerm_resource_group.rg.location
-  count                      = var.enable_insights ? 1 : 0
-  resource_group_name        = var.resource_group_name
-  server_names                = local.server_names
-  arcSettingId               = data.azapi_resource.arc_settings.id
-  workspace_name              = var.workspace_name
+  location                      = data.azurerm_resource_group.rg.location
+  count                         = var.enable_insights ? 1 : 0
+  resource_group_name           = var.resource_group_name
+  server_names                  = local.server_names
+  arcSettingId                  = data.azapi_resource.arc_settings.id
+  workspace_name                = var.workspace_name
   data_collection_rule_name     = var.data_collection_rule_name
   data_collection_endpoint_name = var.data_collection_endpoint_name
 }

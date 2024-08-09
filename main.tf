@@ -26,29 +26,30 @@ data "azurerm_resource_group" "rg" {
 }
 
 resource "azurerm_log_analytics_workspace" "workspace" {
-  resource_group_name = data.azurerm_resource_group.rg.name
   location            = data.azurerm_resource_group.rg.location
   name                = var.workspace_name
+  resource_group_name = data.azurerm_resource_group.rg.name
 }
 
 resource "azurerm_monitor_data_collection_endpoint" "dce" {
-  resource_group_name           = data.azurerm_resource_group.rg.name
   location                      = data.azurerm_resource_group.rg.location
   name                          = var.data_collection_endpoint_name
+  resource_group_name           = data.azurerm_resource_group.rg.name
   public_network_access_enabled = true
 }
 
 resource "azurerm_monitor_data_collection_rule" "dcr" {
-  data_collection_endpoint_id = azurerm_monitor_data_collection_endpoint.dce.id
   location                    = data.azurerm_resource_group.rg.location
   name                        = var.data_collection_rule_name
   resource_group_name         = data.azurerm_resource_group.rg.name
+  data_collection_endpoint_id = azurerm_monitor_data_collection_endpoint.dce.id
+
   data_flow {
     destinations       = [var.workspace_name]
     streams            = ["Microsoft-Perf"]
     built_in_transform = null
-    transform_kql      = null
     output_stream      = null
+    transform_kql      = null
   }
   data_flow {
     destinations       = ["2-90d1-e814dab6067e"]
@@ -56,6 +57,16 @@ resource "azurerm_monitor_data_collection_rule" "dcr" {
     built_in_transform = null
     output_stream      = null
     transform_kql      = null
+  }
+  destinations {
+    log_analytics {
+      name                  = var.workspace_name
+      workspace_resource_id = azurerm_log_analytics_workspace.workspace.id
+    }
+    log_analytics {
+      name                  = "2-90d1-e814dab6067e"
+      workspace_resource_id = azurerm_log_analytics_workspace.workspace.id
+    }
   }
   data_sources {
     performance_counter {
@@ -79,22 +90,10 @@ resource "azurerm_monitor_data_collection_rule" "dcr" {
       ]
     }
   }
-  destinations {
-    log_analytics {
-      name                  = var.workspace_name
-      workspace_resource_id = azurerm_log_analytics_workspace.workspace.id
-    }
-    log_analytics {
-      name                  = "2-90d1-e814dab6067e"
-      workspace_resource_id = azurerm_log_analytics_workspace.workspace.id
-    }
-  }
 }
 
 resource "azapi_resource" "monitor_agent" {
-  type      = "Microsoft.AzureStackHCI/clusters/ArcSettings/Extensions@2023-08-01"
-  parent_id = var.arcSettingId
-  name      = "AzureMonitorWindowsAgent"
+  type = "Microsoft.AzureStackHCI/clusters/ArcSettings/Extensions@2023-08-01"
   body = {
     properties = {
       extensionParameters = {
@@ -106,15 +105,18 @@ resource "azapi_resource" "monitor_agent" {
       }
     }
   }
+  name      = "AzureMonitorWindowsAgent"
+  parent_id = var.arcSettingId
 }
 
 resource "azurerm_monitor_data_collection_rule_association" "association" {
-  for_each                    = toset(var.server_names)
+  for_each = toset(var.server_names)
+
+  target_resource_id          = "${data.azurerm_resource_group.rg.id}/providers/Microsoft.HybridCompute/machines/${each.value}"
   data_collection_endpoint_id = null
   data_collection_rule_id     = azurerm_monitor_data_collection_rule.dcr.id
   description                 = null
   name = "DCRA_${md5(
     "${data.azurerm_resource_group.rg.id}/providers/Microsoft.HybridCompute/machines/${each.value}/${azurerm_monitor_data_collection_rule.dcr.id}"
   )}"
-  target_resource_id = "${data.azurerm_resource_group.rg.id}/providers/Microsoft.HybridCompute/machines/${each.value}"
 }

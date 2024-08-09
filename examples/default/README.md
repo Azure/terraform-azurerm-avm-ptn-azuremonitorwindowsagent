@@ -7,6 +7,10 @@ This deploys the module in its simplest form.
 terraform {
   required_version = "~> 1.5"
   required_providers {
+    azapi = {
+      source  = "azure/azapi"
+      version = "~> 1.13"
+    }
     azurerm = {
       source  = "hashicorp/azurerm"
       version = "~> 3.74"
@@ -15,10 +19,6 @@ terraform {
       source  = "azure/modtm"
       version = "~> 0.3"
     }
-    random = {
-      source  = "hashicorp/random"
-      version = "~> 3.5"
-    }
   }
 }
 
@@ -26,31 +26,32 @@ provider "azurerm" {
   features {}
 }
 
-
 ## Section to provide a random Azure region for the resource group
 # This allows us to randomize the region for the resource group.
 module "regions" {
-  source  = "Azure/regions/azurerm"
-  version = "~> 0.3"
-}
-
-# This allows us to randomize the region for the resource group.
-resource "random_integer" "region_index" {
-  max = length(module.regions.regions) - 1
-  min = 0
-}
-## End of section to provide a random Azure region for the resource group
-
-# This ensures we have unique CAF compliant names for our resources.
-module "naming" {
-  source  = "Azure/naming/azurerm"
-  version = "~> 0.3"
+  source  = "Azure/avm-utl-regions/azurerm"
+  version = "~> 0.1"
 }
 
 # This is required for resource modules
-resource "azurerm_resource_group" "this" {
-  location = module.regions.regions[random_integer.region_index.result].name
-  name     = module.naming.resource_group.name_unique
+data "azurerm_resource_group" "rg" {
+  name = var.resource_group_name
+}
+
+data "azapi_resource" "cluster" {
+  type      = "Microsoft.AzureStackHCI/clusters@2023-08-01-preview"
+  name      = var.cluster_name
+  parent_id = data.azurerm_resource_group.rg.id
+}
+
+data "azapi_resource" "arc_settings" {
+  type      = "Microsoft.AzureStackHCI/clusters/ArcSettings@2023-08-01"
+  name      = "default"
+  parent_id = data.azapi_resource.cluster.id
+}
+
+locals {
+  server_names = [for server in var.servers : server.name]
 }
 
 # This is the module call
@@ -61,11 +62,15 @@ module "test" {
   source = "../../"
   # source             = "Azure/avm-<res/ptn>-<name>/azurerm"
   # ...
-  location            = azurerm_resource_group.this.location
-  name                = "TODO" # TODO update with module.naming.<RESOURCE_TYPE>.name_unique
-  resource_group_name = azurerm_resource_group.this.name
 
-  enable_telemetry = var.enable_telemetry # see variables.tf
+  location                      = data.azurerm_resource_group.rg.location
+  count                         = var.enable_insights ? 1 : 0
+  resource_group_name           = var.resource_group_name
+  server_names                  = local.server_names
+  arcSettingId                  = data.azapi_resource.arc_settings.id
+  workspace_name                = var.workspace_name
+  data_collection_rule_name     = var.data_collection_rule_name
+  data_collection_endpoint_name = var.data_collection_endpoint_name
 }
 ```
 
@@ -76,35 +81,66 @@ The following requirements are needed by this module:
 
 - <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (~> 1.5)
 
+- <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (~> 1.13)
+
 - <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 3.74)
 
 - <a name="requirement_modtm"></a> [modtm](#requirement\_modtm) (~> 0.3)
-
-- <a name="requirement_random"></a> [random](#requirement\_random) (~> 3.5)
-
-## Providers
-
-The following providers are used by this module:
-
-- <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) (~> 3.74)
-
-- <a name="provider_random"></a> [random](#provider\_random) (~> 3.5)
 
 ## Resources
 
 The following resources are used by this module:
 
-- [azurerm_resource_group.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) (resource)
-- [random_integer.region_index](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/integer) (resource)
+- [azapi_resource.arc_settings](https://registry.terraform.io/providers/azure/azapi/latest/docs/data-sources/resource) (data source)
+- [azapi_resource.cluster](https://registry.terraform.io/providers/azure/azapi/latest/docs/data-sources/resource) (data source)
+- [azurerm_resource_group.rg](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/resource_group) (data source)
 
 <!-- markdownlint-disable MD013 -->
 ## Required Inputs
 
-No required inputs.
+The following input variables are required:
+
+### <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name)
+
+Description: The name of the HCI cluster. Must be the same as the name when preparing AD.
+
+Type: `string`
+
+### <a name="input_data_collection_endpoint_name"></a> [data\_collection\_endpoint\_name](#input\_data\_collection\_endpoint\_name)
+
+Description: The name of the Azure Log Analytics data collection endpoint.
+
+Type: `string`
+
+### <a name="input_data_collection_rule_name"></a> [data\_collection\_rule\_name](#input\_data\_collection\_rule\_name)
+
+Description: The name of the Azure Log Analytics data collection rule.
+
+Type: `string`
+
+### <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name)
+
+Description: The resource group name for the Azure Stack HCI cluster.
+
+Type: `string`
+
+### <a name="input_workspace_name"></a> [workspace\_name](#input\_workspace\_name)
+
+Description: The name of the Azure Log Analytics workspace.
+
+Type: `string`
 
 ## Optional Inputs
 
 The following input variables are optional (have default values):
+
+### <a name="input_enable_insights"></a> [enable\_insights](#input\_enable\_insights)
+
+Description: Whether to enable Azure Monitor Insights.
+
+Type: `bool`
+
+Default: `false`
 
 ### <a name="input_enable_telemetry"></a> [enable\_telemetry](#input\_enable\_telemetry)
 
@@ -116,6 +152,34 @@ Type: `bool`
 
 Default: `true`
 
+### <a name="input_servers"></a> [servers](#input\_servers)
+
+Description: A list of servers with their names and IPv4 addresses.
+
+Type:
+
+```hcl
+list(object({
+    name        = string
+    ipv4Address = string
+  }))
+```
+
+Default:
+
+```json
+[
+  {
+    "ipv4Address": "192.168.1.12",
+    "name": "AzSHOST1"
+  },
+  {
+    "ipv4Address": "192.168.1.13",
+    "name": "AzSHOST2"
+  }
+]
+```
+
 ## Outputs
 
 No outputs.
@@ -124,17 +188,11 @@ No outputs.
 
 The following Modules are called:
 
-### <a name="module_naming"></a> [naming](#module\_naming)
-
-Source: Azure/naming/azurerm
-
-Version: ~> 0.3
-
 ### <a name="module_regions"></a> [regions](#module\_regions)
 
-Source: Azure/regions/azurerm
+Source: Azure/avm-utl-regions/azurerm
 
-Version: ~> 0.3
+Version: ~> 0.1
 
 ### <a name="module_test"></a> [test](#module\_test)
 

@@ -1,3 +1,18 @@
+variable "arcSettingId" {
+  type        = string
+  description = "The resource ID for the Azure Arc setting."
+}
+
+variable "data_collection_endpoint_name" {
+  type        = string
+  description = "The name of the Azure Log Analytics data collection endpoint."
+}
+
+variable "data_collection_rule_name" {
+  type        = string
+  description = "The name of the Azure Log Analytics data collection rule."
+}
+
 variable "location" {
   type        = string
   description = "Azure region where the resource should be deployed."
@@ -8,6 +23,16 @@ variable "location" {
 variable "resource_group_name" {
   type        = string
   description = "The resource group where the resources will be deployed."
+}
+
+variable "server_names" {
+  type        = list(string)
+  description = "A list of servers with their names."
+}
+
+variable "workspace_name" {
+  type        = string
+  description = "The name of the Azure Log Analytics workspace."
 }
 
 # required AVM interfaces
@@ -219,29 +244,4 @@ variable "tags" {
   type        = map(string)
   default     = null
   description = "(Optional) Tags of the resource."
-}
-
-variable "server_names" {
-  description = "A list of servers with their names."
-  type        = list(string)
-}
-
-variable "arcSettingId" {
-  description = "The resource ID for the Azure Arc setting."
-  type        = string
-}
-
-variable "workspace_name" {
-  description = "The name of the Azure Log Analytics workspace."
-  type        = string
-}
-
-variable "data_collection_rule_name" {
-  description = "The name of the Azure Log Analytics data collection rule."
-  type        = string
-}
-
-variable "data_collection_endpoint_name" {
-  description = "The name of the Azure Log Analytics data collection endpoint."
-  type        = string
 }
