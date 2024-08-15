@@ -28,6 +28,7 @@ variable "resource_group_name" {
 variable "server_names" {
   type        = list(string)
   description = "A list of servers with their names."
+  nullable    = false
 }
 
 variable "workspace_name" {
