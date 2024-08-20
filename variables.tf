@@ -8,9 +8,9 @@ variable "data_collection_endpoint_name" {
   description = "The name of the Azure Log Analytics data collection endpoint."
 }
 
-variable "data_collection_rule_name" {
+variable "data_collection_rule_id" {
   type        = string
-  description = "The name of the Azure Log Analytics data collection rule."
+  description = "The id of the Azure Log Analytics data collection rule."
 }
 
 variable "location" {

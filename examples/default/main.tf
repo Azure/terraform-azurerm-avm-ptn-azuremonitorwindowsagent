@@ -64,6 +64,6 @@ module "test" {
   server_names                  = local.server_names
   arc_setting_id                = data.azapi_resource.arc_settings.id
   workspace_name                = var.workspace_name
-  data_collection_rule_name     = var.data_collection_rule_name
+  data_collection_rule_id       = var.data_collection_rule_id
   data_collection_endpoint_name = var.data_collection_endpoint_name
 }
