@@ -47,9 +47,9 @@ resource "azurerm_monitor_data_collection_rule_association" "association" {
 
   target_resource_id          = "${data.azurerm_resource_group.rg.id}/providers/Microsoft.HybridCompute/machines/${each.value}"
   data_collection_endpoint_id = null
-  data_collection_rule_id     = var.data_collection_rule_id
+  data_collection_rule_id     = var.data_collection_rule_resource_id
   description                 = null
   name = "DCRA_${md5(
-    "${data.azurerm_resource_group.rg.id}/providers/Microsoft.HybridCompute/machines/${each.value}/${var.data_collection_rule_id}"
+    "${data.azurerm_resource_group.rg.id}/providers/Microsoft.HybridCompute/machines/${each.value}/${var.data_collection_rule_resource_id}"
   )}"
 }

@@ -3,7 +3,7 @@ variable "arc_setting_id" {
   description = "The resource ID for the Azure Arc setting."
 }
 
-variable "data_collection_rule_id" {
+variable "data_collection_rule_resource_id" {
   type        = string
   description = "The id of the Azure Log Analytics data collection rule."
 }

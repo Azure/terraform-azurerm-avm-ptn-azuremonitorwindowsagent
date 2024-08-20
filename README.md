@@ -50,7 +50,7 @@ Description: The resource ID for the Azure Arc setting.
 
 Type: `string`
 
-### <a name="input_data_collection_rule_id"></a> [data\_collection\_rule\_id](#input\_data\_collection\_rule\_id)
+### <a name="input_data_collection_rule_resource_id"></a> [data\_collection\_rule\_resource\_id](#input\_data\_collection\_rule\_resource\_id)
 
 Description: The id of the Azure Log Analytics data collection rule.
 

@@ -58,9 +58,9 @@ module "test" {
   # ...
   enable_telemetry = var.enable_telemetry
 
-  count                   = var.enable_insights ? 1 : 0
-  resource_group_name     = var.resource_group_name
-  server_names            = local.server_names
-  arc_setting_id          = data.azapi_resource.arc_settings.id
-  data_collection_rule_id = var.data_collection_rule_id
+  count                            = var.enable_insights ? 1 : 0
+  resource_group_name              = var.resource_group_name
+  server_names                     = local.server_names
+  arc_setting_id                   = data.azapi_resource.arc_settings.id
+  data_collection_rule_resource_id = var.data_collection_rule_resource_id
 }
