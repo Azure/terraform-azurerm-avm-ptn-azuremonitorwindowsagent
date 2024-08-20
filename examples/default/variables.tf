@@ -8,11 +8,6 @@ variable "cluster_name" {
   }
 }
 
-variable "data_collection_endpoint_name" {
-  type        = string
-  description = "The name of the Azure Log Analytics data collection endpoint."
-}
-
 variable "data_collection_rule_id" {
   type        = string
   description = "The id of the Azure Log Analytics data collection rule."
@@ -21,11 +16,6 @@ variable "data_collection_rule_id" {
 variable "resource_group_name" {
   type        = string
   description = "The resource group name for the Azure Stack HCI cluster."
-}
-
-variable "workspace_name" {
-  type        = string
-  description = "The name of the Azure Log Analytics workspace."
 }
 
 variable "enable_insights" {

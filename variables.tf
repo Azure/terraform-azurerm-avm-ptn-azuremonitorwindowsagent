@@ -3,20 +3,9 @@ variable "arc_setting_id" {
   description = "The resource ID for the Azure Arc setting."
 }
 
-variable "data_collection_endpoint_name" {
-  type        = string
-  description = "The name of the Azure Log Analytics data collection endpoint."
-}
-
 variable "data_collection_rule_id" {
   type        = string
   description = "The id of the Azure Log Analytics data collection rule."
-}
-
-variable "location" {
-  type        = string
-  description = "Azure region where the resource should be deployed."
-  nullable    = false
 }
 
 # This is required for most resource modules
@@ -29,11 +18,6 @@ variable "server_names" {
   type        = list(string)
   description = "A list of servers with their names."
   nullable    = false
-}
-
-variable "workspace_name" {
-  type        = string
-  description = "The name of the Azure Log Analytics workspace."
 }
 
 # required AVM interfaces

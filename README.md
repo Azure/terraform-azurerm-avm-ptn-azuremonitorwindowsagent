@@ -50,21 +50,9 @@ Description: The resource ID for the Azure Arc setting.
 
 Type: `string`
 
-### <a name="input_data_collection_endpoint_name"></a> [data\_collection\_endpoint\_name](#input\_data\_collection\_endpoint\_name)
-
-Description: The name of the Azure Log Analytics data collection endpoint.
-
-Type: `string`
-
 ### <a name="input_data_collection_rule_id"></a> [data\_collection\_rule\_id](#input\_data\_collection\_rule\_id)
 
 Description: The id of the Azure Log Analytics data collection rule.
-
-Type: `string`
-
-### <a name="input_location"></a> [location](#input\_location)
-
-Description: Azure region where the resource should be deployed.
 
 Type: `string`
 
@@ -79,12 +67,6 @@ Type: `string`
 Description: A list of servers with their names.
 
 Type: `list(string)`
-
-### <a name="input_workspace_name"></a> [workspace\_name](#input\_workspace\_name)
-
-Description: The name of the Azure Log Analytics workspace.
-
-Type: `string`
 
 ## Optional Inputs
 
