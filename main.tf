@@ -38,7 +38,7 @@ resource "azapi_resource" "monitor_agent" {
       }
     }
   }
-  name      = "AzureMonitorWindowsAgent"
+  name      = var.name
   parent_id = var.arc_setting_id
 }
 
@@ -49,7 +49,7 @@ resource "azurerm_monitor_data_collection_rule_association" "association" {
   data_collection_endpoint_id = null
   data_collection_rule_id     = var.data_collection_rule_resource_id
   description                 = null
-  name = "DCRA_${md5(
+  name = var.azurerm_monitor_data_collection_rule_association_name == "" ? "DCRA_${md5(
     "${data.azurerm_resource_group.rg.id}/providers/Microsoft.HybridCompute/machines/${each.value}/${var.data_collection_rule_resource_id}"
-  )}"
+  )}" : var.azurerm_monitor_data_collection_rule_association_name
 }

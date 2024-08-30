@@ -54,7 +54,7 @@ locals {
 # with a data source.
 module "test" {
   source = "../../"
-  # source             = "Azure/avm-<res/ptn>-<name>/azurerm"
+  # source             = "Azure/avm-ptn-azuremonitorwindowsagent/azurerm"
   # ...
   enable_telemetry = var.enable_telemetry
 
