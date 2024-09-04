@@ -53,24 +53,6 @@ Description: The resource ID for the Azure Arc setting.
 
 Type: `string`
 
-### <a name="input_data_collection_endpoint_name"></a> [data\_collection\_endpoint\_name](#input\_data\_collection\_endpoint\_name)
-
-Description: The name of the Azure Log Analytics data collection endpoint.
-
-Type: `string`
-
-### <a name="input_data_collection_rule_name"></a> [data\_collection\_rule\_name](#input\_data\_collection\_rule\_name)
-
-Description: The name of the Azure Log Analytics data collection rule.
-
-Type: `string`
-
-### <a name="input_location"></a> [location](#input\_location)
-
-Description: Azure region where the resource should be deployed.
-
-Type: `string`
-
 ### <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name)
 
 Description: The resource group where the resources will be deployed.
@@ -82,12 +64,6 @@ Type: `string`
 Description: A list of servers with their names.
 
 Type: `list(string)`
-
-### <a name="input_workspace_name"></a> [workspace\_name](#input\_workspace\_name)
-
-Description: The name of the Azure Log Analytics workspace.
-
-Type: `string`
 
 ## Optional Inputs
 
@@ -107,7 +83,23 @@ Description: Whether to create the data collection resources.
 
 Type: `bool`
 
-Default: `true`
+Default: `false`
+
+### <a name="input_data_collection_endpoint_name"></a> [data\_collection\_endpoint\_name](#input\_data\_collection\_endpoint\_name)
+
+Description: The name of the Azure Log Analytics data collection endpoint.
+
+Type: `string`
+
+Default: `null`
+
+### <a name="input_data_collection_rule_name"></a> [data\_collection\_rule\_name](#input\_data\_collection\_rule\_name)
+
+Description: The name of the Azure Log Analytics data collection rule.
+
+Type: `string`
+
+Default: `null`
 
 ### <a name="input_data_collection_rule_resource_id"></a> [data\_collection\_rule\_resource\_id](#input\_data\_collection\_rule\_resource\_id)
 
@@ -126,6 +118,14 @@ If it is set to false, then no telemetry will be collected.
 Type: `bool`
 
 Default: `true`
+
+### <a name="input_location"></a> [location](#input\_location)
+
+Description: Azure region where the resource should be deployed.
+
+Type: `string`
+
+Default: `null`
 
 ### <a name="input_lock"></a> [lock](#input\_lock)
 
@@ -182,6 +182,14 @@ map(object({
 ```
 
 Default: `{}`
+
+### <a name="input_workspace_name"></a> [workspace\_name](#input\_workspace\_name)
+
+Description: The name of the Azure Log Analytics workspace.
+
+Type: `string`
+
+Default: `null`
 
 ## Outputs
 
