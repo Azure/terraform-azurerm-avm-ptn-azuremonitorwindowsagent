@@ -70,17 +70,6 @@ DESCRIPTION
   nullable    = false
 }
 
-variable "location" {
-  type        = string
-  default     = null
-  description = "Azure region where the resource should be deployed."
-
-  validation {
-    condition     = var.create_data_collection_resources == true ? var.location != null : true
-    error_message = "You must provide 'location' when 'create_data_collection_resources' is set to true."
-  }
-}
-
 variable "lock" {
   type = object({
     kind = string

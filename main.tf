@@ -28,7 +28,7 @@ data "azurerm_resource_group" "rg" {
 resource "azurerm_log_analytics_workspace" "workspace" {
   count = var.create_data_collection_resources ? 1 : 0
 
-  location            = var.location
+  location            = data.azurerm_resource_group.rg.location
   name                = var.workspace_name
   resource_group_name = data.azurerm_resource_group.rg.name
   tags                = {}
@@ -37,7 +37,7 @@ resource "azurerm_log_analytics_workspace" "workspace" {
 resource "azurerm_monitor_data_collection_endpoint" "dce" {
   count = var.create_data_collection_resources ? 1 : 0
 
-  location                      = var.location
+  location                      = data.azurerm_resource_group.rg.location
   name                          = var.data_collection_endpoint_name
   resource_group_name           = data.azurerm_resource_group.rg.name
   public_network_access_enabled = true
@@ -47,7 +47,7 @@ resource "azurerm_monitor_data_collection_endpoint" "dce" {
 resource "azurerm_monitor_data_collection_rule" "dcr" {
   count = var.create_data_collection_resources ? 1 : 0
 
-  location                    = var.location
+  location                    = data.azurerm_resource_group.rg.location
   name                        = var.data_collection_rule_name
   resource_group_name         = data.azurerm_resource_group.rg.name
   data_collection_endpoint_id = azurerm_monitor_data_collection_endpoint.dce[0].id
