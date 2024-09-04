@@ -25,6 +25,82 @@ data "azurerm_resource_group" "rg" {
   name = var.resource_group_name
 }
 
+resource "azurerm_log_analytics_workspace" "workspace" {
+  count = var.create_data_collection_resources ? 1 : 0
+
+  location            = var.location
+  name                = var.workspace_name
+  resource_group_name = data.azurerm_resource_group.rg.name
+  tags                = {}
+}
+
+resource "azurerm_monitor_data_collection_endpoint" "dce" {
+  count = var.create_data_collection_resources ? 1 : 0
+
+  location                      = var.location
+  name                          = var.data_collection_endpoint_name
+  resource_group_name           = data.azurerm_resource_group.rg.name
+  public_network_access_enabled = true
+  tags                          = {}
+}
+
+resource "azurerm_monitor_data_collection_rule" "dcr" {
+  count = var.create_data_collection_resources ? 1 : 0
+
+  location                    = var.location
+  name                        = var.data_collection_rule_name
+  resource_group_name         = data.azurerm_resource_group.rg.name
+  data_collection_endpoint_id = azurerm_monitor_data_collection_endpoint.dce.id
+  tags                        = {}
+
+  data_flow {
+    destinations       = [var.workspace_name]
+    streams            = ["Microsoft-Perf"]
+    built_in_transform = null
+    output_stream      = null
+    transform_kql      = null
+  }
+  data_flow {
+    destinations       = ["2-90d1-e814dab6067e"]
+    streams            = ["Microsoft-Event"]
+    built_in_transform = null
+    output_stream      = null
+    transform_kql      = null
+  }
+  destinations {
+    log_analytics {
+      name                  = var.workspace_name
+      workspace_resource_id = azurerm_log_analytics_workspace.workspace.id
+    }
+    log_analytics {
+      name                  = "2-90d1-e814dab6067e"
+      workspace_resource_id = azurerm_log_analytics_workspace.workspace.id
+    }
+  }
+  data_sources {
+    performance_counter {
+      counter_specifiers = [
+        "\\Memory\\Available Bytes",
+        "\\Network Interface(*)\\Bytes Total/sec",
+        "\\Processor(_Total)\\% Processor Time",
+        "\\RDMA Activity(*)\\RDMA Inbound Bytes/sec",
+        "\\RDMA Activity(*)\\RDMA Outbound Bytes/sec"
+      ]
+      name                          = "perfCounterDataSource"
+      sampling_frequency_in_seconds = 10
+      streams                       = ["Microsoft-Perf"]
+    }
+    windows_event_log {
+      name    = "eventLogsDataSource"
+      streams = ["Microsoft-Event"]
+      x_path_queries = [
+        "Microsoft-Windows-SDDC-Management/Operational!*[System[(EventID=3000 or EventID=3001 or EventID=3002 or EventID=3003 or EventID=3004)]]",
+        "microsoft-windows-health/operational!*"
+      ]
+    }
+  }
+}
+
 resource "azapi_resource" "monitor_agent" {
   type = "Microsoft.AzureStackHCI/clusters/ArcSettings/Extensions@2023-08-01"
   body = {
@@ -47,9 +123,13 @@ resource "azurerm_monitor_data_collection_rule_association" "association" {
 
   target_resource_id          = "${data.azurerm_resource_group.rg.id}/providers/Microsoft.HybridCompute/machines/${each.value}"
   data_collection_endpoint_id = null
-  data_collection_rule_id     = var.data_collection_rule_resource_id
+  data_collection_rule_id     = create_data_collection_resources ? azurerm_monitor_data_collection_rule.dcr.id : var.data_collection_rule_resource_id
   description                 = null
-  name = var.azurerm_monitor_data_collection_rule_association_name == "" ? "DCRA_${md5(
-    "${data.azurerm_resource_group.rg.id}/providers/Microsoft.HybridCompute/machines/${each.value}/${var.data_collection_rule_resource_id}"
-  )}" : var.azurerm_monitor_data_collection_rule_association_name
+  # Determines the value of the name based on the following conditions:
+  # 1. If 'azurerm_monitor_data_collection_rule_association_name' is not empty, it will be used as the 'name'.
+  # 2. Otherwise, if 'create_data_collection_resources' is true, the name will be generated using the MD5 hash of the resource group ID and the 'azurerm_monitor_data_collection_rule.dcr.id'.
+  # 3. If 'create_data_collection_resources' is false, the name will be generated using the MD5 hash of the resource group ID and the 'data_collection_rule_resource_id' variable.
+  name = var.azurerm_monitor_data_collection_rule_association_name != "" ? var.azurerm_monitor_data_collection_rule_association_name : (var.create_data_collection_resources ?
+    "DCRA_${md5("${data.azurerm_resource_group.rg.id}/providers/Microsoft.HybridCompute/machines/${each.value}/${azurerm_monitor_data_collection_rule.dcr.id}")}" :
+  "DCRA_${md5("${data.azurerm_resource_group.rg.id}/providers/Microsoft.HybridCompute/machines/${each.value}/${var.data_collection_rule_resource_id}")}")
 }

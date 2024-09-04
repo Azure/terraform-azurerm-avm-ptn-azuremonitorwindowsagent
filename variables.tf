@@ -3,12 +3,24 @@ variable "arc_setting_id" {
   description = "The resource ID for the Azure Arc setting."
 }
 
-variable "data_collection_rule_resource_id" {
+variable "data_collection_endpoint_name" {
   type        = string
-  description = "The id of the Azure Log Analytics data collection rule."
+  default     = null
+  description = "The name of the Azure Log Analytics data collection endpoint."
 }
 
-# This is required for most resource modules
+variable "data_collection_rule_name" {
+  type        = string
+  default     = null
+  description = "The name of the Azure Log Analytics data collection rule."
+}
+
+variable "location" {
+  type        = string
+  description = "Azure region where the resource should be deployed."
+  nullable    = false
+}
+
 variable "resource_group_name" {
   type        = string
   description = "The resource group where the resources will be deployed."
@@ -20,10 +32,32 @@ variable "server_names" {
   nullable    = false
 }
 
+variable "workspace_name" {
+  type        = string
+  description = "The name of the Azure Log Analytics workspace."
+}
+
 variable "azurerm_monitor_data_collection_rule_association_name" {
   type        = string
   default     = ""
   description = "The name of the Azure Monitor Data Collection Rule Association."
+}
+
+variable "create_data_collection_resources" {
+  type        = bool
+  default     = true
+  description = "Whether to create the data collection resources."
+}
+
+variable "data_collection_rule_resource_id" {
+  type        = string
+  default     = null
+  description = "The id of the Azure Log Analytics data collection rule."
+
+  validation {
+    condition     = var.create_data_collection_resources == false ? var.data_collection_rule_resource_id != null : true
+    error_message = "You must provide 'data_collection_rule_resource_id' when 'create_data_collection_resources' is set to false."
+  }
 }
 
 variable "enable_telemetry" {
