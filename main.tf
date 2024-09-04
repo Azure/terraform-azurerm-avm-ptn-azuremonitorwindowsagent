@@ -50,7 +50,7 @@ resource "azurerm_monitor_data_collection_rule" "dcr" {
   location                    = var.location
   name                        = var.data_collection_rule_name
   resource_group_name         = data.azurerm_resource_group.rg.name
-  data_collection_endpoint_id = azurerm_monitor_data_collection_endpoint.dce.id
+  data_collection_endpoint_id = azurerm_monitor_data_collection_endpoint.dce[0].id
   tags                        = {}
 
   data_flow {
@@ -70,11 +70,11 @@ resource "azurerm_monitor_data_collection_rule" "dcr" {
   destinations {
     log_analytics {
       name                  = var.workspace_name
-      workspace_resource_id = azurerm_log_analytics_workspace.workspace.id
+      workspace_resource_id = azurerm_log_analytics_workspace.workspace[0].id
     }
     log_analytics {
       name                  = "2-90d1-e814dab6067e"
-      workspace_resource_id = azurerm_log_analytics_workspace.workspace.id
+      workspace_resource_id = azurerm_log_analytics_workspace.workspace[0].id
     }
   }
   data_sources {
@@ -123,13 +123,13 @@ resource "azurerm_monitor_data_collection_rule_association" "association" {
 
   target_resource_id          = "${data.azurerm_resource_group.rg.id}/providers/Microsoft.HybridCompute/machines/${each.value}"
   data_collection_endpoint_id = null
-  data_collection_rule_id     = create_data_collection_resources ? azurerm_monitor_data_collection_rule.dcr.id : var.data_collection_rule_resource_id
+  data_collection_rule_id     = create_data_collection_resources ? azurerm_monitor_data_collection_rule.dcr[0].id : var.data_collection_rule_resource_id
   description                 = null
   # Determines the value of the name based on the following conditions:
   # 1. If 'azurerm_monitor_data_collection_rule_association_name' is not empty, it will be used as the 'name'.
-  # 2. Otherwise, if 'create_data_collection_resources' is true, the name will be generated using the MD5 hash of the resource group ID and the 'azurerm_monitor_data_collection_rule.dcr.id'.
+  # 2. Otherwise, if 'create_data_collection_resources' is true, the name will be generated using the MD5 hash of the resource group ID and the 'azurerm_monitor_data_collection_rule.dcr[0].id'.
   # 3. If 'create_data_collection_resources' is false, the name will be generated using the MD5 hash of the resource group ID and the 'data_collection_rule_resource_id' variable.
   name = var.azurerm_monitor_data_collection_rule_association_name != "" ? var.azurerm_monitor_data_collection_rule_association_name : (var.create_data_collection_resources ?
-    "DCRA_${md5("${data.azurerm_resource_group.rg.id}/providers/Microsoft.HybridCompute/machines/${each.value}/${azurerm_monitor_data_collection_rule.dcr.id}")}" :
+    "DCRA_${md5("${data.azurerm_resource_group.rg.id}/providers/Microsoft.HybridCompute/machines/${each.value}/${azurerm_monitor_data_collection_rule.dcr[0].id}")}" :
   "DCRA_${md5("${data.azurerm_resource_group.rg.id}/providers/Microsoft.HybridCompute/machines/${each.value}/${var.data_collection_rule_resource_id}")}")
 }
