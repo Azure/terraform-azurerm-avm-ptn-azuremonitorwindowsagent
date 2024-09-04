@@ -3,12 +3,6 @@ variable "arc_setting_id" {
   description = "The resource ID for the Azure Arc setting."
 }
 
-variable "data_collection_rule_resource_id" {
-  type        = string
-  description = "The id of the Azure Log Analytics data collection rule."
-}
-
-# This is required for most resource modules
 variable "resource_group_name" {
   type        = string
   description = "The resource group where the resources will be deployed."
@@ -24,6 +18,45 @@ variable "azurerm_monitor_data_collection_rule_association_name" {
   type        = string
   default     = ""
   description = "The name of the Azure Monitor Data Collection Rule Association."
+}
+
+variable "create_data_collection_resources" {
+  type        = bool
+  default     = false
+  description = "Whether to create the data collection resources."
+}
+
+variable "data_collection_endpoint_name" {
+  type        = string
+  default     = null
+  description = "The name of the Azure Log Analytics data collection endpoint."
+
+  validation {
+    condition     = var.create_data_collection_resources == true ? var.data_collection_endpoint_name != null : true
+    error_message = "You must provide 'data_collection_endpoint_name' when 'create_data_collection_resources' is set to true."
+  }
+}
+
+variable "data_collection_rule_name" {
+  type        = string
+  default     = null
+  description = "The name of the Azure Log Analytics data collection rule."
+
+  validation {
+    condition     = var.create_data_collection_resources == true ? var.data_collection_rule_name != null : true
+    error_message = "You must provide 'data_collection_rule_name' when 'create_data_collection_resources' is set to true."
+  }
+}
+
+variable "data_collection_rule_resource_id" {
+  type        = string
+  default     = null
+  description = "The id of the Azure Log Analytics data collection rule."
+
+  validation {
+    condition     = var.create_data_collection_resources == false ? var.data_collection_rule_resource_id != null : true
+    error_message = "You must provide 'data_collection_rule_resource_id' when 'create_data_collection_resources' is set to false."
+  }
 }
 
 variable "enable_telemetry" {
@@ -87,4 +120,15 @@ A map of role assignments to create on this resource. The map key is deliberatel
 > Note: only set `skip_service_principal_aad_check` to true if you are assigning a role to a service principal.
 DESCRIPTION
   nullable    = false
+}
+
+variable "workspace_name" {
+  type        = string
+  default     = null
+  description = "The name of the Azure Log Analytics workspace."
+
+  validation {
+    condition     = var.create_data_collection_resources == true ? var.workspace_name != null : true
+    error_message = "You must provide 'workspace_name' when 'create_data_collection_resources' is set to true."
+  }
 }

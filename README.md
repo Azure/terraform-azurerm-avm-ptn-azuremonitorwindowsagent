@@ -30,7 +30,10 @@ The following requirements are needed by this module:
 The following resources are used by this module:
 
 - [azapi_resource.monitor_agent](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) (resource)
+- [azurerm_log_analytics_workspace.workspace](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/log_analytics_workspace) (resource)
 - [azurerm_management_lock.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/management_lock) (resource)
+- [azurerm_monitor_data_collection_endpoint.dce](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/monitor_data_collection_endpoint) (resource)
+- [azurerm_monitor_data_collection_rule.dcr](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/monitor_data_collection_rule) (resource)
 - [azurerm_monitor_data_collection_rule_association.association](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/monitor_data_collection_rule_association) (resource)
 - [azurerm_role_assignment.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) (resource)
 - [modtm_telemetry.telemetry](https://registry.terraform.io/providers/azure/modtm/latest/docs/resources/telemetry) (resource)
@@ -47,12 +50,6 @@ The following input variables are required:
 ### <a name="input_arc_setting_id"></a> [arc\_setting\_id](#input\_arc\_setting\_id)
 
 Description: The resource ID for the Azure Arc setting.
-
-Type: `string`
-
-### <a name="input_data_collection_rule_resource_id"></a> [data\_collection\_rule\_resource\_id](#input\_data\_collection\_rule\_resource\_id)
-
-Description: The id of the Azure Log Analytics data collection rule.
 
 Type: `string`
 
@@ -79,6 +76,38 @@ Description: The name of the Azure Monitor Data Collection Rule Association.
 Type: `string`
 
 Default: `""`
+
+### <a name="input_create_data_collection_resources"></a> [create\_data\_collection\_resources](#input\_create\_data\_collection\_resources)
+
+Description: Whether to create the data collection resources.
+
+Type: `bool`
+
+Default: `false`
+
+### <a name="input_data_collection_endpoint_name"></a> [data\_collection\_endpoint\_name](#input\_data\_collection\_endpoint\_name)
+
+Description: The name of the Azure Log Analytics data collection endpoint.
+
+Type: `string`
+
+Default: `null`
+
+### <a name="input_data_collection_rule_name"></a> [data\_collection\_rule\_name](#input\_data\_collection\_rule\_name)
+
+Description: The name of the Azure Log Analytics data collection rule.
+
+Type: `string`
+
+Default: `null`
+
+### <a name="input_data_collection_rule_resource_id"></a> [data\_collection\_rule\_resource\_id](#input\_data\_collection\_rule\_resource\_id)
+
+Description: The id of the Azure Log Analytics data collection rule.
+
+Type: `string`
+
+Default: `null`
 
 ### <a name="input_enable_telemetry"></a> [enable\_telemetry](#input\_enable\_telemetry)
 
@@ -145,6 +174,14 @@ map(object({
 ```
 
 Default: `{}`
+
+### <a name="input_workspace_name"></a> [workspace\_name](#input\_workspace\_name)
+
+Description: The name of the Azure Log Analytics workspace.
+
+Type: `string`
+
+Default: `null`
 
 ## Outputs
 
