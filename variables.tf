@@ -20,6 +20,24 @@ variable "azurerm_monitor_data_collection_rule_association_name" {
   description = "The name of the Azure Monitor Data Collection Rule Association."
 }
 
+variable "cmk_for_query_forced" {
+  type        = bool
+  default     = false
+  description = "(Optional) Is Customer Managed Storage mandatory for query management?"
+}
+
+variable "counter_specifiers" {
+  type = list(string)
+  default = [
+    "\\Memory\\Available Bytes",
+    "\\Network Interface(*)\\Bytes Total/sec",
+    "\\Processor(_Total)\\% Processor Time",
+    "\\RDMA Activity(*)\\RDMA Inbound Bytes/sec",
+    "\\RDMA Activity(*)\\RDMA Outbound Bytes/sec"
+  ]
+  description = "A list of performance counter specifiers."
+}
+
 variable "create_data_collection_resources" {
   type        = bool
   default     = false
@@ -35,6 +53,18 @@ variable "data_collection_endpoint_name" {
     condition     = var.create_data_collection_resources == true ? var.data_collection_endpoint_name != null : true
     error_message = "You must provide 'data_collection_endpoint_name' when 'create_data_collection_resources' is set to true."
   }
+}
+
+variable "data_collection_endpoint_tags" {
+  type        = map(string)
+  default     = {}
+  description = "A mapping of tags to assign to th data collection endpoint."
+}
+
+variable "data_collection_rule_destination_id" {
+  type        = string
+  default     = "2-90d1-e814dab6067e"
+  description = "The id of data collection rule destination id."
 }
 
 variable "data_collection_rule_name" {
@@ -59,6 +89,12 @@ variable "data_collection_rule_resource_id" {
   }
 }
 
+variable "data_collection_rule_tags" {
+  type        = map(string)
+  default     = {}
+  description = "A mapping of tags to assign to th data collection rule."
+}
+
 variable "enable_telemetry" {
   type        = bool
   default     = true
@@ -68,6 +104,12 @@ For more information see <https://aka.ms/avm/telemetryinfo>.
 If it is set to false, then no telemetry will be collected.
 DESCRIPTION
   nullable    = false
+}
+
+variable "immediate_data_purge_on_30_days_enabled" {
+  type        = bool
+  default     = false
+  description = "(Optional) Whether to remove the data in the Log Analytics Workspace immediately after 30 days."
 }
 
 variable "lock" {
@@ -93,6 +135,12 @@ variable "name" {
   type        = string
   default     = "AzureMonitorWindowsAgent"
   description = "The name of the this resource."
+}
+
+variable "retention_in_days" {
+  type        = number
+  default     = 30
+  description = "(Optional) The workspace data retention in days. Possible values are either 7 (Free Tier only) or range between 30 and 730."
 }
 
 variable "role_assignments" {
@@ -122,6 +170,12 @@ DESCRIPTION
   nullable    = false
 }
 
+variable "sku" {
+  type        = string
+  default     = "PerGB2018"
+  description = " (Optional) Specifies the SKU of the Log Analytics Workspace."
+}
+
 variable "workspace_name" {
   type        = string
   default     = null
@@ -131,4 +185,19 @@ variable "workspace_name" {
     condition     = var.create_data_collection_resources == true ? var.workspace_name != null : true
     error_message = "You must provide 'workspace_name' when 'create_data_collection_resources' is set to true."
   }
+}
+
+variable "workspace_tags" {
+  type        = map(string)
+  default     = {}
+  description = "A mapping of tags to assign to the Azure Log Analytics workspace."
+}
+
+variable "x_path_queries" {
+  type = list(string)
+  default = [
+    "Microsoft-Windows-SDDC-Management/Operational!*[System[(EventID=3000 or EventID=3001 or EventID=3002 or EventID=3003 or EventID=3004)]]",
+    "microsoft-windows-health/operational!*"
+  ]
+  description = "A list of XPath queries for event logs."
 }

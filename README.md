@@ -77,6 +77,32 @@ Type: `string`
 
 Default: `""`
 
+### <a name="input_cmk_for_query_forced"></a> [cmk\_for\_query\_forced](#input\_cmk\_for\_query\_forced)
+
+Description: (Optional) Is Customer Managed Storage mandatory for query management?
+
+Type: `bool`
+
+Default: `false`
+
+### <a name="input_counter_specifiers"></a> [counter\_specifiers](#input\_counter\_specifiers)
+
+Description: A list of performance counter specifiers.
+
+Type: `list(string)`
+
+Default:
+
+```json
+[
+  "\\Memory\\Available Bytes",
+  "\\Network Interface(*)\\Bytes Total/sec",
+  "\\Processor(_Total)\\% Processor Time",
+  "\\RDMA Activity(*)\\RDMA Inbound Bytes/sec",
+  "\\RDMA Activity(*)\\RDMA Outbound Bytes/sec"
+]
+```
+
 ### <a name="input_create_data_collection_resources"></a> [create\_data\_collection\_resources](#input\_create\_data\_collection\_resources)
 
 Description: Whether to create the data collection resources.
@@ -92,6 +118,22 @@ Description: The name of the Azure Log Analytics data collection endpoint.
 Type: `string`
 
 Default: `null`
+
+### <a name="input_data_collection_endpoint_tags"></a> [data\_collection\_endpoint\_tags](#input\_data\_collection\_endpoint\_tags)
+
+Description: A mapping of tags to assign to th data collection endpoint.
+
+Type: `map(string)`
+
+Default: `{}`
+
+### <a name="input_data_collection_rule_destination_id"></a> [data\_collection\_rule\_destination\_id](#input\_data\_collection\_rule\_destination\_id)
+
+Description: The id of data collection rule destination id.
+
+Type: `string`
+
+Default: `"2-90d1-e814dab6067e"`
 
 ### <a name="input_data_collection_rule_name"></a> [data\_collection\_rule\_name](#input\_data\_collection\_rule\_name)
 
@@ -109,6 +151,14 @@ Type: `string`
 
 Default: `null`
 
+### <a name="input_data_collection_rule_tags"></a> [data\_collection\_rule\_tags](#input\_data\_collection\_rule\_tags)
+
+Description: A mapping of tags to assign to th data collection rule.
+
+Type: `map(string)`
+
+Default: `{}`
+
 ### <a name="input_enable_telemetry"></a> [enable\_telemetry](#input\_enable\_telemetry)
 
 Description: This variable controls whether or not telemetry is enabled for the module.  
@@ -118,6 +168,14 @@ If it is set to false, then no telemetry will be collected.
 Type: `bool`
 
 Default: `true`
+
+### <a name="input_immediate_data_purge_on_30_days_enabled"></a> [immediate\_data\_purge\_on\_30\_days\_enabled](#input\_immediate\_data\_purge\_on\_30\_days\_enabled)
+
+Description: (Optional) Whether to remove the data in the Log Analytics Workspace immediately after 30 days.
+
+Type: `bool`
+
+Default: `false`
 
 ### <a name="input_lock"></a> [lock](#input\_lock)
 
@@ -144,6 +202,14 @@ Description: The name of the this resource.
 Type: `string`
 
 Default: `"AzureMonitorWindowsAgent"`
+
+### <a name="input_retention_in_days"></a> [retention\_in\_days](#input\_retention\_in\_days)
+
+Description: (Optional) The workspace data retention in days. Possible values are either 7 (Free Tier only) or range between 30 and 730.
+
+Type: `number`
+
+Default: `30`
 
 ### <a name="input_role_assignments"></a> [role\_assignments](#input\_role\_assignments)
 
@@ -175,6 +241,14 @@ map(object({
 
 Default: `{}`
 
+### <a name="input_sku"></a> [sku](#input\_sku)
+
+Description:  (Optional) Specifies the SKU of the Log Analytics Workspace.
+
+Type: `string`
+
+Default: `"PerGB2018"`
+
 ### <a name="input_workspace_name"></a> [workspace\_name](#input\_workspace\_name)
 
 Description: The name of the Azure Log Analytics workspace.
@@ -182,6 +256,29 @@ Description: The name of the Azure Log Analytics workspace.
 Type: `string`
 
 Default: `null`
+
+### <a name="input_workspace_tags"></a> [workspace\_tags](#input\_workspace\_tags)
+
+Description: A mapping of tags to assign to the Azure Log Analytics workspace.
+
+Type: `map(string)`
+
+Default: `{}`
+
+### <a name="input_x_path_queries"></a> [x\_path\_queries](#input\_x\_path\_queries)
+
+Description: A list of XPath queries for event logs.
+
+Type: `list(string)`
+
+Default:
+
+```json
+[
+  "Microsoft-Windows-SDDC-Management/Operational!*[System[(EventID=3000 or EventID=3001 or EventID=3002 or EventID=3003 or EventID=3004)]]",
+  "microsoft-windows-health/operational!*"
+]
+```
 
 ## Outputs
 
