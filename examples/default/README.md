@@ -26,13 +26,6 @@ provider "azurerm" {
   }
 }
 
-## Section to provide a random Azure region for the resource group
-# This allows us to randomize the region for the resource group.
-module "regions" {
-  source  = "Azure/avm-utl-regions/azurerm"
-  version = "~> 0.1"
-}
-
 # This is required for resource modules
 data "azurerm_resource_group" "rg" {
   name = var.resource_group_name
@@ -61,7 +54,8 @@ locals {
 module "test" {
   source = "../../"
   # source             = "Azure/avm-ptn-azuremonitorwindowsagent/azurerm"
-  # ...
+  # version = "~> 0.1.0"
+
   enable_telemetry = var.enable_telemetry
 
   count                            = var.enable_insights ? 1 : 0
@@ -171,12 +165,6 @@ No outputs.
 ## Modules
 
 The following Modules are called:
-
-### <a name="module_regions"></a> [regions](#module\_regions)
-
-Source: Azure/avm-utl-regions/azurerm
-
-Version: ~> 0.1
 
 ### <a name="module_test"></a> [test](#module\_test)
 
