@@ -28,10 +28,14 @@ data "azurerm_resource_group" "rg" {
 resource "azurerm_log_analytics_workspace" "workspace" {
   count = var.create_data_collection_resources ? 1 : 0
 
-  location            = data.azurerm_resource_group.rg.location
-  name                = var.workspace_name
-  resource_group_name = data.azurerm_resource_group.rg.name
-  tags                = {}
+  location                                = data.azurerm_resource_group.rg.location
+  name                                    = var.workspace_name
+  resource_group_name                     = var.resource_group_name
+  cmk_for_query_forced                    = var.cmk_for_query_forced
+  immediate_data_purge_on_30_days_enabled = var.immediate_data_purge_on_30_days_enabled
+  retention_in_days                       = var.retention_in_days
+  sku                                     = var.sku
+  tags                                    = var.workspace_tags
 }
 
 resource "azurerm_monitor_data_collection_endpoint" "dce" {
@@ -39,9 +43,9 @@ resource "azurerm_monitor_data_collection_endpoint" "dce" {
 
   location                      = data.azurerm_resource_group.rg.location
   name                          = var.data_collection_endpoint_name
-  resource_group_name           = data.azurerm_resource_group.rg.name
+  resource_group_name           = var.resource_group_name
   public_network_access_enabled = true
-  tags                          = {}
+  tags                          = var.data_collection_endpoint_tags
 }
 
 resource "azurerm_monitor_data_collection_rule" "dcr" {
@@ -49,9 +53,9 @@ resource "azurerm_monitor_data_collection_rule" "dcr" {
 
   location                    = data.azurerm_resource_group.rg.location
   name                        = var.data_collection_rule_name
-  resource_group_name         = data.azurerm_resource_group.rg.name
+  resource_group_name         = var.resource_group_name
   data_collection_endpoint_id = azurerm_monitor_data_collection_endpoint.dce[0].id
-  tags                        = {}
+  tags                        = var.data_collection_rule_tags
 
   data_flow {
     destinations       = [var.workspace_name]
@@ -61,7 +65,7 @@ resource "azurerm_monitor_data_collection_rule" "dcr" {
     transform_kql      = null
   }
   data_flow {
-    destinations       = ["2-90d1-e814dab6067e"]
+    destinations       = [var.data_collection_rule_destination_id]
     streams            = ["Microsoft-Event"]
     built_in_transform = null
     output_stream      = null
@@ -73,30 +77,21 @@ resource "azurerm_monitor_data_collection_rule" "dcr" {
       workspace_resource_id = azurerm_log_analytics_workspace.workspace[0].id
     }
     log_analytics {
-      name                  = "2-90d1-e814dab6067e"
+      name                  = var.data_collection_rule_destination_id
       workspace_resource_id = azurerm_log_analytics_workspace.workspace[0].id
     }
   }
   data_sources {
     performance_counter {
-      counter_specifiers = [
-        "\\Memory\\Available Bytes",
-        "\\Network Interface(*)\\Bytes Total/sec",
-        "\\Processor(_Total)\\% Processor Time",
-        "\\RDMA Activity(*)\\RDMA Inbound Bytes/sec",
-        "\\RDMA Activity(*)\\RDMA Outbound Bytes/sec"
-      ]
+      counter_specifiers            = var.counter_specifiers
       name                          = "perfCounterDataSource"
       sampling_frequency_in_seconds = 10
       streams                       = ["Microsoft-Perf"]
     }
     windows_event_log {
-      name    = "eventLogsDataSource"
-      streams = ["Microsoft-Event"]
-      x_path_queries = [
-        "Microsoft-Windows-SDDC-Management/Operational!*[System[(EventID=3000 or EventID=3001 or EventID=3002 or EventID=3003 or EventID=3004)]]",
-        "microsoft-windows-health/operational!*"
-      ]
+      name           = "eventLogsDataSource"
+      streams        = ["Microsoft-Event"]
+      x_path_queries = var.x_path_queries
     }
   }
 }
