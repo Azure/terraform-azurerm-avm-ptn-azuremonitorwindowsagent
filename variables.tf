@@ -1,17 +1,22 @@
+variable "arc_server_ids" {
+  type        = list(string)
+  description = "The resource IDs of the Azure Arc servers."
+  nullable    = false
+}
+
 variable "arc_setting_id" {
   type        = string
   description = "The resource ID for the Azure Arc setting."
 }
 
+variable "data_collection_resources_location" {
+  type        = string
+  description = "The location of the data collection resources."
+}
+
 variable "resource_group_name" {
   type        = string
   description = "The resource group where the resources will be deployed."
-}
-
-variable "server_names" {
-  type        = list(string)
-  description = "A list of servers with their names."
-  nullable    = false
 }
 
 variable "azurerm_monitor_data_collection_rule_association_name" {
