@@ -21,14 +21,10 @@ resource "azurerm_role_assignment" "this" {
   skip_service_principal_aad_check       = each.value.skip_service_principal_aad_check
 }
 
-data "azurerm_resource_group" "rg" {
-  name = var.resource_group_name
-}
-
 resource "azurerm_log_analytics_workspace" "workspace" {
   count = var.create_data_collection_resources ? 1 : 0
 
-  location                                = data.azurerm_resource_group.rg.location
+  location                                = var.data_collection_resources_location
   name                                    = var.workspace_name
   resource_group_name                     = var.resource_group_name
   cmk_for_query_forced                    = var.cmk_for_query_forced
@@ -41,7 +37,7 @@ resource "azurerm_log_analytics_workspace" "workspace" {
 resource "azurerm_monitor_data_collection_endpoint" "dce" {
   count = var.create_data_collection_resources ? 1 : 0
 
-  location                      = data.azurerm_resource_group.rg.location
+  location                      = var.data_collection_resources_location
   name                          = var.data_collection_endpoint_name
   resource_group_name           = var.resource_group_name
   public_network_access_enabled = true
@@ -51,7 +47,7 @@ resource "azurerm_monitor_data_collection_endpoint" "dce" {
 resource "azurerm_monitor_data_collection_rule" "dcr" {
   count = var.create_data_collection_resources ? 1 : 0
 
-  location                    = data.azurerm_resource_group.rg.location
+  location                    = var.data_collection_resources_location
   name                        = var.data_collection_rule_name
   resource_group_name         = var.resource_group_name
   data_collection_endpoint_id = azurerm_monitor_data_collection_endpoint.dce[0].id
@@ -114,9 +110,9 @@ resource "azapi_resource" "monitor_agent" {
 }
 
 resource "azurerm_monitor_data_collection_rule_association" "association" {
-  for_each = toset(var.server_names)
+  for_each = toset(var.arc_server_ids)
 
-  target_resource_id          = "${data.azurerm_resource_group.rg.id}/providers/Microsoft.HybridCompute/machines/${each.value}"
+  target_resource_id          = each.value
   data_collection_endpoint_id = null
   data_collection_rule_id     = var.create_data_collection_resources ? azurerm_monitor_data_collection_rule.dcr[0].id : var.data_collection_rule_resource_id
   description                 = null
@@ -124,7 +120,6 @@ resource "azurerm_monitor_data_collection_rule_association" "association" {
   # 1. If 'azurerm_monitor_data_collection_rule_association_name' is not empty, it will be used as the 'name'.
   # 2. Otherwise, if 'create_data_collection_resources' is true, the name will be generated using the MD5 hash of the resource group ID and the 'azurerm_monitor_data_collection_rule.dcr[0].id'.
   # 3. If 'create_data_collection_resources' is false, the name will be generated using the MD5 hash of the resource group ID and the 'data_collection_rule_resource_id' variable.
-  name = var.azurerm_monitor_data_collection_rule_association_name != "" ? var.azurerm_monitor_data_collection_rule_association_name : (var.create_data_collection_resources ?
-    "DCRA_${md5("${data.azurerm_resource_group.rg.id}/providers/Microsoft.HybridCompute/machines/${each.value}/${azurerm_monitor_data_collection_rule.dcr[0].id}")}" :
-  "DCRA_${md5("${data.azurerm_resource_group.rg.id}/providers/Microsoft.HybridCompute/machines/${each.value}/${var.data_collection_rule_resource_id}")}")
+  name = var.azurerm_monitor_data_collection_rule_association_name != "" ? var.azurerm_monitor_data_collection_rule_association_name : (
+  var.create_data_collection_resources ? "DCRA_${md5("${each.value}/${azurerm_monitor_data_collection_rule.dcr[0].id}")}" : "DCRA_${md5("${each.value}/${var.data_collection_rule_resource_id}")}")
 }

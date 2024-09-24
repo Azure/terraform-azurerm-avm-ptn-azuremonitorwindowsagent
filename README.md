@@ -32,13 +32,18 @@ The following resources are used by this module:
 - [modtm_telemetry.telemetry](https://registry.terraform.io/providers/azure/modtm/latest/docs/resources/telemetry) (resource)
 - [random_uuid.telemetry](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/uuid) (resource)
 - [azurerm_client_config.telemetry](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/client_config) (data source)
-- [azurerm_resource_group.rg](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/resource_group) (data source)
 - [modtm_module_source.telemetry](https://registry.terraform.io/providers/azure/modtm/latest/docs/data-sources/module_source) (data source)
 
 <!-- markdownlint-disable MD013 -->
 ## Required Inputs
 
 The following input variables are required:
+
+### <a name="input_arc_server_ids"></a> [arc\_server\_ids](#input\_arc\_server\_ids)
+
+Description: The resource IDs of the Azure Arc servers.
+
+Type: `list(string)`
 
 ### <a name="input_arc_setting_id"></a> [arc\_setting\_id](#input\_arc\_setting\_id)
 
@@ -51,12 +56,6 @@ Type: `string`
 Description: The resource group where the resources will be deployed.
 
 Type: `string`
-
-### <a name="input_server_names"></a> [server\_names](#input\_server\_names)
-
-Description: A list of servers with their names.
-
-Type: `list(string)`
 
 ## Optional Inputs
 
@@ -119,6 +118,14 @@ Description: A mapping of tags to assign to th data collection endpoint.
 Type: `map(string)`
 
 Default: `{}`
+
+### <a name="input_data_collection_resources_location"></a> [data\_collection\_resources\_location](#input\_data\_collection\_resources\_location)
+
+Description: The location of the data collection resources.
+
+Type: `string`
+
+Default: `""`
 
 ### <a name="input_data_collection_rule_destination_id"></a> [data\_collection\_rule\_destination\_id](#input\_data\_collection\_rule\_destination\_id)
 
