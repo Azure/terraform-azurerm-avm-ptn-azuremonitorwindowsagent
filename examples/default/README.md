@@ -44,7 +44,7 @@ data "azapi_resource" "arc_settings" {
 }
 
 locals {
-  server_names = [for server in var.servers : server.name]
+  arc_server_ids = [for server in var.servers : "${data.azurerm_resource_group.rg.id}/providers/Microsoft.HybridCompute/machines/${server.name}"]
 }
 
 # This is the module call
@@ -60,7 +60,7 @@ module "test" {
 
   count                            = var.enable_insights ? 1 : 0
   resource_group_name              = var.resource_group_name
-  server_names                     = local.server_names
+  arc_server_ids                   = local.arc_server_ids
   arc_setting_id                   = data.azapi_resource.arc_settings.id
   data_collection_rule_resource_id = var.data_collection_rule_resource_id
 }

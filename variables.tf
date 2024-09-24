@@ -9,11 +9,6 @@ variable "arc_setting_id" {
   description = "The resource ID for the Azure Arc setting."
 }
 
-variable "data_collection_resources_location" {
-  type        = string
-  description = "The location of the data collection resources."
-}
-
 variable "resource_group_name" {
   type        = string
   description = "The resource group where the resources will be deployed."
@@ -64,6 +59,17 @@ variable "data_collection_endpoint_tags" {
   type        = map(string)
   default     = {}
   description = "A mapping of tags to assign to th data collection endpoint."
+}
+
+variable "data_collection_resources_location" {
+  type        = string
+  default     = ""
+  description = "The location of the data collection resources."
+
+  validation {
+    condition     = var.create_data_collection_resources == true ? var.data_collection_resources_location != "" : true
+    error_message = "You must provide 'data_collection_resources_location' when 'create_data_collection_resources' is set to true."
+  }
 }
 
 variable "data_collection_rule_destination_id" {

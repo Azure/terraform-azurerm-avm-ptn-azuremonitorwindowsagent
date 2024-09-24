@@ -51,12 +51,6 @@ Description: The resource ID for the Azure Arc setting.
 
 Type: `string`
 
-### <a name="input_data_collection_resources_location"></a> [data\_collection\_resources\_location](#input\_data\_collection\_resources\_location)
-
-Description: The location of the data collection resources.
-
-Type: `string`
-
 ### <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name)
 
 Description: The resource group where the resources will be deployed.
@@ -124,6 +118,14 @@ Description: A mapping of tags to assign to th data collection endpoint.
 Type: `map(string)`
 
 Default: `{}`
+
+### <a name="input_data_collection_resources_location"></a> [data\_collection\_resources\_location](#input\_data\_collection\_resources\_location)
+
+Description: The location of the data collection resources.
+
+Type: `string`
+
+Default: `""`
 
 ### <a name="input_data_collection_rule_destination_id"></a> [data\_collection\_rule\_destination\_id](#input\_data\_collection\_rule\_destination\_id)
 
