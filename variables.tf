@@ -1,6 +1,6 @@
 variable "arc_server_ids" {
-  type        = list(string)
-  description = "The resource IDs of the Azure Arc servers."
+  type        = map(string)
+  description = "The resource IDs of the Azure Arc servers. Key is the server name and value is the resource ID."
   nullable    = false
 }
 

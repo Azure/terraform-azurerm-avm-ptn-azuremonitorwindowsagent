@@ -110,7 +110,7 @@ resource "azapi_resource" "monitor_agent" {
 }
 
 resource "azurerm_monitor_data_collection_rule_association" "association" {
-  for_each = toset(var.arc_server_ids)
+  for_each = var.arc_server_ids
 
   target_resource_id          = each.value
   data_collection_endpoint_id = null
