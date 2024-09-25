@@ -41,9 +41,9 @@ The following input variables are required:
 
 ### <a name="input_arc_server_ids"></a> [arc\_server\_ids](#input\_arc\_server\_ids)
 
-Description: The resource IDs of the Azure Arc servers.
+Description: The resource IDs of the Azure Arc servers. Key is the server name and value is the resource ID.
 
-Type: `list(string)`
+Type: `map(string)`
 
 ### <a name="input_arc_setting_id"></a> [arc\_setting\_id](#input\_arc\_setting\_id)
 
