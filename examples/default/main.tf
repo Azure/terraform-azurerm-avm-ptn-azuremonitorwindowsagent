@@ -38,7 +38,7 @@ data "azapi_resource" "arc_settings" {
 }
 
 locals {
-  arc_server_ids = [for server in var.servers : "${data.azurerm_resource_group.rg.id}/providers/Microsoft.HybridCompute/machines/${server.name}"]
+  arc_server_ids = { for server in var.servers : server.name => "${data.azurerm_resource_group.rg.id}/providers/Microsoft.HybridCompute/machines/${server.name}" }
 }
 
 # This is the module call
