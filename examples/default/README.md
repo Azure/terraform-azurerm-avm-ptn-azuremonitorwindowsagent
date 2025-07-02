@@ -6,6 +6,7 @@ This deploys the module in its simplest form.
 ```hcl
 terraform {
   required_version = "~> 1.5"
+
   required_providers {
     azapi = {
       source  = "azure/azapi"
@@ -33,15 +34,15 @@ data "azurerm_resource_group" "rg" {
 }
 
 data "azapi_resource" "cluster" {
-  type      = "Microsoft.AzureStackHCI/clusters@2023-08-01-preview"
   name      = var.cluster_name
   parent_id = data.azurerm_resource_group.rg.id
+  type      = "Microsoft.AzureStackHCI/clusters@2023-08-01-preview"
 }
 
 data "azapi_resource" "arc_settings" {
-  type      = "Microsoft.AzureStackHCI/clusters/ArcSettings@2023-08-01"
   name      = "default"
   parent_id = data.azapi_resource.cluster.id
+  type      = "Microsoft.AzureStackHCI/clusters/ArcSettings@2023-08-01"
 }
 
 locals {
@@ -54,16 +55,13 @@ locals {
 # with a data source.
 module "test" {
   source = "../../"
-  # source             = "Azure/avm-ptn-azuremonitorwindowsagent/azurerm"
-  # version = "~> 0.1.0"
+  count  = var.enable_insights ? 1 : 0
 
-  enable_telemetry = var.enable_telemetry
-
-  count                            = var.enable_insights ? 1 : 0
-  resource_group_name              = var.resource_group_name
   arc_server_ids                   = local.arc_server_ids
   arc_setting_id                   = data.azapi_resource.arc_settings.id
+  resource_group_name              = var.resource_group_name
   data_collection_rule_resource_id = var.data_collection_rule_resource_id
+  enable_telemetry                 = var.enable_telemetry
 }
 ```
 
