@@ -93,7 +93,9 @@ resource "azurerm_monitor_data_collection_rule" "dcr" {
 }
 
 resource "azapi_resource" "monitor_agent" {
-  type = "Microsoft.AzureStackHCI/clusters/ArcSettings/Extensions@2023-08-01"
+  name      = var.name
+  parent_id = var.arc_setting_id
+  type      = "Microsoft.AzureStackHCI/clusters/ArcSettings/Extensions@2023-08-01"
   body = {
     properties = {
       extensionParameters = {
@@ -105,8 +107,6 @@ resource "azapi_resource" "monitor_agent" {
       }
     }
   }
-  name      = var.name
-  parent_id = var.arc_setting_id
 }
 
 resource "azurerm_monitor_data_collection_rule_association" "association" {
