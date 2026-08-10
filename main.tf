@@ -67,6 +67,7 @@ resource "azurerm_monitor_data_collection_rule" "dcr" {
     output_stream      = null
     transform_kql      = null
   }
+
   destinations {
     log_analytics {
       name                  = var.workspace_name
@@ -77,6 +78,7 @@ resource "azurerm_monitor_data_collection_rule" "dcr" {
       workspace_resource_id = azurerm_log_analytics_workspace.workspace[0].id
     }
   }
+
   data_sources {
     performance_counter {
       counter_specifiers            = var.counter_specifiers
