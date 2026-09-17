@@ -62,7 +62,7 @@ module "test" {
   arc_setting_id                   = data.azapi_resource.arc_settings.id
   resource_group_name              = var.resource_group_name
   data_collection_rule_resource_id = var.data_collection_rule_resource_id
-  enable_telemetry                 = var.enable_telemetry
+  enable_telemetry                 = false
 }
 ```
 
