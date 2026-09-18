@@ -1,0 +1,10 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Azure/azure-verified-modules-tools/main/src/Avm.Authoring/Resources/Schemas/v1/avm-module-metadata.schema.json",
+  "moduleDisplayName": "Azure Monitor Windows Agent",
+  "moduleDescription": "AVM Pattern Module for Azure Monitor Windows Agent",
+  "canonicalType": "azuremonitorwindowsagent",
+  "owners": [
+    "chirag1603"
+  ],
+  "telemetryIdPrefix": "46d3xtrf.ptn.966f495"
+}
