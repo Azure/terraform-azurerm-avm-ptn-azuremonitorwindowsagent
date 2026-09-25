@@ -51,15 +51,13 @@ locals {
 }
 
 # This is the module call
-# Do not specify location here due to the randomization above.
-# Leaving location as `null` will cause the module to use the resource group location
-# with a data source.
 module "test" {
   source = "../../"
   count  = var.enable_insights ? 1 : 0
 
   arc_server_ids                   = local.arc_server_ids
   arc_setting_id                   = data.azapi_resource.arc_settings.id
+  location                         = data.azurerm_resource_group.rg.location
   resource_group_name              = var.resource_group_name
   data_collection_rule_resource_id = var.data_collection_rule_resource_id
   enable_telemetry                 = var.enable_telemetry
