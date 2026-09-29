@@ -1,0 +1,1 @@
+This example requires a registered non-production Azure Stack HCI cluster with ArcSettings and Arc-enabled servers, plus an existing Data Collection Rule in the selected test subscription. The shared PR workflow has no such fixture, so it cannot safely plan or deploy this example. Validate it manually in an isolated HCI lab.
